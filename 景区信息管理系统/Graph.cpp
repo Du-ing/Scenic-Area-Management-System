@@ -39,7 +39,7 @@ void Graph::InitGraph()
 		fscanf(e_fp, "%d %d %d", &edge.vex1, &edge.vex2, &edge.weight);//读取一条边信息
 		InsertEdge(edge);//加入读取的边到图中
 	}
-	cout << "创建级景区成功！" << endl;
+	cout << "创建景区成功！" << endl;
 }
 
 int Graph::GetVexNum()
@@ -83,4 +83,32 @@ int Graph::SearchEdges(int nVex, Edge aEdge[])
 		}
 	}
 	return num;
+}
+
+void Graph::DFS(int nVex, int* bVisted, int nIndex, int* pList, int& ways)//深度遍历图，获得从指定景点开始的游览路径
+{
+	pList[nIndex] = nVex;
+	bVisted[nVex] = 1;//访问过的景点标记为1
+	if (nIndex == vexNum - 1)//全部遍历完毕
+	{
+		ways++;
+		for (int i = 0;i < vexNum;i++)
+		{
+			cout << SearchVex(pList[i]).name;
+			if (i < vexNum - 1)
+				cout << "-->";
+		}
+		cout << endl;
+	}
+	else
+	{
+		for (int i = 0;i < vexNum;i++)
+		{
+			if (adjMatrix[nVex][i] != 0 && bVisted[i] == 0)//如果两点相连且访问点未被访问过
+			{
+				DFS(i, bVisted, nIndex + 1, pList, ways);//递归
+			}
+		}
+	}
+	bVisted[nVex] = 0;//还原状态
 }

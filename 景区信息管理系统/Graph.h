@@ -24,5 +24,6 @@ typedef struct Graph
 	void InsertEdge(Edge& edge);//将边保存到邻接矩阵中
 	Vex SearchVex(int nVex);//根据编号查询顶点信息
 	int SearchEdges(int nVex, Edge aEdge[]);//查询指定顶点相连的边
+	void DFS(int nVex, int bVisted[], int nIndex, int* pList, int& ways);//深度遍历图，获得从指定景点开始的游览路径
 }Graph;//Graph对象，用于存储景区景点图
 

@@ -45,3 +45,27 @@ void getSpotInfo()//查询景点相关信息
 		cout << v1.name << "-->" << v2.name << ":" << edges[i].weight << "m" << endl;	
 	}
 }
+
+void travlePath()//旅游景点导航
+{
+	cout << "=====旅游景点导航=====" << endl;
+	for (int i = 0;i < graph.GetVexNum();i++)//输出图中所有景点
+	{
+		Vex v = graph.SearchVex(i);
+		cout << i << "--" << v.name << endl;
+	}
+	cout << "=====================" << endl;
+	cout << "请输入起始景点的编号:";
+	int start;
+	cin >> start;
+
+	int* bVisted = new int[graph.GetVexNum()];//标记景点是否访问过
+	for (int i = 0;i < graph.GetVexNum();i++)
+		bVisted[i] = 0;
+	int* pList = new int[graph.GetVexNum()];//记录导航路线
+	for (int i = 0;i < graph.GetVexNum();i++)
+		pList[i] = 0;
+	int ways = 0;
+	cout << "从" << graph.SearchVex(start).name << "开始的导航路线如下:" << endl;
+	graph.DFS(start, bVisted, 0, pList, ways);
+}
