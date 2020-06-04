@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<iostream>
 #include"Graph.h"
+#define MAX 10000
 #define VexFile "Data/Vex.txt"
 #define EdgeFile "Data/Edge.txt"
 using namespace std;
@@ -27,6 +28,15 @@ void Graph::InitGraph()
 	fclose(v_fp);//关闭文件
 
 	//读取边信息
+	
+	for (int i = 0;i < vexNum;i++)
+	{
+		for (int j = 0;j < vexNum;j++)
+		{
+			adjMatrix[i][j] = MAX;
+		}
+	}
+
 	FILE* e_fp = NULL;
 	if ((e_fp = fopen(EdgeFile, "rb")) == NULL)
 	{
@@ -75,7 +85,7 @@ int Graph::SearchEdges(int nVex, Edge aEdge[])
 	int num = 0;//记录相邻的边数
 	for (int i = 0;i < vexNum;i++)
 	{
-		if (adjMatrix[nVex][i] != 0)
+		if (adjMatrix[nVex][i] < MAX)
 		{
 			Edge edge = { nVex,i,adjMatrix[nVex][i] };//构造邻接矩阵中查到的相邻边
 			aEdge[num] = edge;
@@ -104,11 +114,104 @@ void Graph::DFS(int nVex, int* bVisted, int nIndex, int* pList, int& ways)//深度
 	{
 		for (int i = 0;i < vexNum;i++)
 		{
-			if (adjMatrix[nVex][i] != 0 && bVisted[i] == 0)//如果两点相连且访问点未被访问过
+			if (adjMatrix[nVex][i] < MAX && bVisted[i] == 0)//如果两点相连且访问点未被访问过
 			{
 				DFS(i, bVisted, nIndex + 1, pList, ways);//递归
 			}
 		}
 	}
 	bVisted[nVex] = 0;//还原状态
+}
+
+int Graph::FindShortPath(int nVexStart, int nVexEnd, Edge aPath[])//搜索最短路径
+{
+	int* dist = new int[vexNum];//存储当前求到的从顶点v 到顶点 j 的最短路径长度
+	int* S = new int[vexNum];//存放已求得最短路径的顶点
+	int* path = new int[vexNum];//存放求到的最短路径
+	for (int i = 0;i < vexNum;i++)//初始化
+	{
+		dist[i] = adjMatrix[nVexStart][i];
+		S[i] = 0;
+		if (i != nVexStart && adjMatrix[nVexStart][i] < MAX)
+			path[i] = nVexStart;
+		else
+			path[i] = -1;
+	}
+	S[nVexStart] = 1;//将起始点加入S
+	dist[nVexStart] = 0;
+	for (int i = 0;i < vexNum - 1;i++)//算法过程
+	{
+		int u;
+		int min = MAX;
+		for (int k = 0;k < vexNum;k++)//找到当前不在集合S中且具有最短路径的顶点
+		{
+			if (S[k] == 0 && dist[k] != -1 && dist[k] < min)
+			{
+				min = dist[k];
+				u = k;
+			}
+		}
+		S[u] = 1;//将u加入S
+		for (int j = 0;j < vexNum;j++)//修改
+		{
+			if (S[j] == 0 && adjMatrix[u][j] < MAX && dist[u] + adjMatrix[u][j] < dist[j])
+			{
+				dist[j] = dist[u] + adjMatrix[u][j];
+				path[j] = u;
+			}
+		}
+	}
+	/*for (int i = 0;i < vexNum;i++)
+		cout << path[i] << " ";
+	cout << endl;*/
+	//返回最短路径
+	int n = 0;
+	int num = nVexEnd;
+	while (true)
+	{
+		if (num == nVexStart)
+			break;
+		Edge edge = { num,path[num],adjMatrix[num][path[num]] };
+		aPath[n++] = edge;
+		num = path[num];
+	}
+	return n;
+}
+
+int Graph::FindMinTree(Edge aPath[])//构建最小生成树
+{
+	int n = 0;//存储边数
+	int u = 0;//起始顶点
+	int* lowcost = new int[vexNum];//距离
+	int* vex = new int[vexNum];//最近顶点
+	for (int v = 0;v < vexNum;v++)//初始化
+	{
+		vex[v] = u;
+		lowcost[v] = adjMatrix[u][v];
+	}
+	for (int i = 0;i < vexNum - 1;i++)
+	{
+		int k;
+		int min = MAX;
+		for (int j = 1;j < vexNum;j++)//找当前最小边
+		{
+			if (lowcost[j] < min && lowcost[j] != 0)
+			{
+				min = lowcost[j];
+				k = j;
+			}
+		}
+		Edge edge = { vex[k],k,min };
+		aPath[n++] = edge;				//加入最小生成树
+		lowcost[k] = 0;
+		for (int v = 0;v < vexNum;v++)//修改数组值
+		{
+			if (adjMatrix[k][v] < lowcost[v])
+			{
+				lowcost[v] = adjMatrix[k][v];
+				vex[v] = k;
+			}
+		}
+	}
+	return n;
 }

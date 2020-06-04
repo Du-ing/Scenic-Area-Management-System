@@ -1,2 +1,6 @@
-﻿  Main.cpp
+﻿  Graph.cpp
+  Main.cpp
+  Tourism.cpp
+  正在生成代码...
+D:\我的学习文档\数据结构实验\实验二、图\景区信息管理系统\Graph.cpp(81): warning C4715: “Graph::SearchVex”: 不是所有的控件路径都返回值
   景区信息管理系统.vcxproj -> D:\我的学习文档\数据结构实验\实验二、图\景区信息管理系统\Debug\景区信息管理系统.exe

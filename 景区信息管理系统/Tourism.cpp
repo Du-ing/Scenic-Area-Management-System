@@ -69,3 +69,55 @@ void travlePath()//旅游景点导航
 	cout << "从" << graph.SearchVex(start).name << "开始的导航路线如下:" << endl;
 	graph.DFS(start, bVisted, 0, pList, ways);
 }
+
+void FindShortPath()
+{
+	cout << "=====搜索最短路径=====" << endl;
+	for (int i = 0;i < graph.GetVexNum();i++)//输出图中所有景点
+	{
+		Vex v = graph.SearchVex(i);
+		cout << i << "--" << v.name << endl;
+	}
+
+	int start, end;
+	cout << "请输入起点的编号:";
+	cin >> start;
+	cout << "请输入终点的编号:";
+	cin >> end;
+	cout << "最短路线如下:" << endl;
+	Edge* aPath = new Edge[graph.GetVexNum()];//存储最短的路径
+	int n = graph.FindShortPath(start, end, aPath);
+	int length = 0;//路径长度
+	for (int i = n - 1;i >= 0;i--)
+	{
+		Vex v = graph.SearchVex(aPath[i].vex2);
+		cout << v.name << "-->";
+		length += aPath[i].weight;
+	}
+	Vex v = graph.SearchVex(aPath[0].vex1);
+	cout << v.name << endl;
+	cout << "最短距离为:" << length << "m" << endl;
+}
+
+void DesignPath()
+{
+	cout << "=====铺设电路规划=====" << endl;
+	cout << "铺设电路规划如下:" << endl;
+	Edge* path = new Edge[graph.GetVexNum()];
+	int n = graph.FindMinTree(path);
+	int sum = 0;
+	for (int i = 0;i < n;i++)
+	{
+		Vex v1 = graph.SearchVex(path[i].vex1);
+		Vex v2 = graph.SearchVex(path[i].vex2);
+		cout << v1.name << "==" << v2.name << "  " << path[i].weight << "m" << endl;
+		sum += path[i].weight;
+	}
+	cout << "铺设电路总长度为:" << sum << "m" << endl;
+}
+
+void ExitSystem()
+{
+	cout << "景区管理系统已退出，感谢使用！" << endl;
+	exit(0);
+}
